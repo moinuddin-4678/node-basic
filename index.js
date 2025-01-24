@@ -103,7 +103,7 @@ mongoose
 // Define Profile Schema
 const profileSchema = new mongoose.Schema({
   id: Number,
-  insta: String,
+  link: String,
   name: String,
   desc: String,
 });
@@ -147,10 +147,20 @@ app.get('/profiles', async (req, res) => {
     res.status(200).json(profiles)
 })
 
-app.post('/profileCreate/', (req, res) => {
-    const profile = req.body;
-    profiles.push(profile)
-    res.status(200).json(profiles);
+// app.post('/profileCreate/', (req, res) => {
+//     const profile = req.body;
+//     profiles.push(profile)
+//     res.status(200).json(profiles);
+// })
+app.post('/profileCreate/', async (req, res) => {
+    const profileData = req.body;
+    const newProfile = new Profile(profileData);
+
+    // Save the profile to MongoDB
+    await newProfile.save();
+
+    // Respond with the saved profile
+    res.status(200).json(newProfile);
 })
 
 app.put('/profileUpdate/', (req, res) => {
