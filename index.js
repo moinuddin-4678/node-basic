@@ -165,42 +165,67 @@ app.post('/profileCreate/', async (req, res) => {
 })
 
 app.put('/profileUpdate/', async(req, res) => {
-    // Algorithm
-    // step 1: Save req data in profile variable
-    // step 2: Find Index
-    // step 3: Check index is there or not
-    // step 4: Replace the new values
-    // step 5: Return Updated value
-
-    // Save req data in profile variable
     const profile = req.body;
-    // Find Index
-    const profileIndex = profiles.findIndex((item) => {
-        return item.id == profile.id
-    })
-    // Check index is there or not
-    if (profileIndex == -1) {
-        res.status(404).send("Not Found.");
-    }
-    // //  Replace the new value
-    // profiles[profileIndex] = profile;
-    //  Return Updated value
-    const profiles = await Profile.find(); 
-    res.status(200).send(profiles);
+    const result = await Profile.updateOne(
+        { id: profile.id },
+        { $set: profile }
+    );
+    if (result.matchedCount === 0 )
+        res.status(404).json('Not Found...');
+    const profiles = await Profile.find();
+    res.status(200).json(profiles);
+    // // Algorithm
+    // // step 1: Save req data in profile variable
+    // // step 2: Find Index
+    // // step 3: Check index is there or not
+    // // step 4: Replace the new values
+    // // step 5: Return Updated value
+
+    // // Save req data in profile variable
+    // const profile = req.body;
+    // // Find Index
+    // const profileIndex = profiles.findIndex((item) => {
+    //     return item.id == profile.id
+    // })
+    
+    // // Check index is there or not
+    // if (profileIndex == -1) {
+    //     res.status(404).send("Not Found.");
+    // }
+    // // //  Replace the new value
+    // // profiles[profileIndex] = profile;
+    // //  Return Updated value
+    // const profiles = await Profile.find(); 
+    // res.status(200).send(profiles);
 })
 
 // delete profile
 app.delete('/profiledelete/:id/', async (req, res) => {
     const id = req.params.id;
-    const profileIndex = profiles.findIndex((item) => {
-        return item.id == id
-    })
-    if (profileIndex == -1) {
-        res.status(404).send("Not Found.");
+    const profile = await Profile.findOneAndDelete({ id: id }); // Find and delete profile by id
+    // const profileIndex = profiles.findIndex((item)=>{
+    //     return item.id == id
+    // })
+    if(!profile) {
+        res.status(404).json('Not Found...');
     }
-    profiles.splice(profileIndex, 1);
-    const profiles = await Profile.find(); 
-    res.status(200).send(profiles);
+    const profiles = await Profile.find(); // Fetch all profiles from the database 
+
+
+    // profiles.splice(profileIndex, 1)
+    res.status(200).json(profiles);
+
+
+    // const id = req.params.id;
+    // const profileIndex = profiles.findIndex((item) => {
+    //     return item.id == id
+    // })
+    // if (profileIndex == -1) {
+    //     res.status(404).send("Not Found.");
+    // }
+    // profiles.splice(profileIndex, 1);
+    // const profiles = await Profile.find(); 
+    // res.status(200).send(profiles);
 })
 
 app.listen('8000', () => {
