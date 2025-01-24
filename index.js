@@ -160,10 +160,11 @@ app.post('/profileCreate/', async (req, res) => {
     await newProfile.save();
 
     // Respond with the saved profile
-    res.status(200).json(newProfile);
+    const profiles = await Profile.find(); 
+    res.status(200).json(profiles);
 })
 
-app.put('/profileUpdate/', (req, res) => {
+app.put('/profileUpdate/', async(req, res) => {
     // Algorithm
     // step 1: Save req data in profile variable
     // step 2: Find Index
@@ -181,14 +182,15 @@ app.put('/profileUpdate/', (req, res) => {
     if (profileIndex == -1) {
         res.status(404).send("Not Found.");
     }
-    //  Replace the new value
-    profiles[profileIndex] = profile;
+    // //  Replace the new value
+    // profiles[profileIndex] = profile;
     //  Return Updated value
+    const profiles = await Profile.find(); 
     res.status(200).send(profiles);
 })
 
 // delete profile
-app.delete('/profiledelete/:id/', (req, res) => {
+app.delete('/profiledelete/:id/', async (req, res) => {
     const id = req.params.id;
     const profileIndex = profiles.findIndex((item) => {
         return item.id == id
@@ -197,6 +199,7 @@ app.delete('/profiledelete/:id/', (req, res) => {
         res.status(404).send("Not Found.");
     }
     profiles.splice(profileIndex, 1);
+    const profiles = await Profile.find(); 
     res.status(200).send(profiles);
 })
 
