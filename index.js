@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const mongoose = require('mongoose');
 const app = express()
 
 app.use(cors())
@@ -93,6 +94,22 @@ const  data = [
         ]
     }
 ]
+// Connect to MongoDB
+mongoose
+  .connect('mongodb://localhost:27017/practice')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('Failed to connect to MongoDB', err));
+
+// Define Profile Schema
+const profileSchema = new mongoose.Schema({
+  id: Number,
+  insta: String,
+  name: String,
+  desc: String,
+});
+
+// Create Profile Model
+const Profile = mongoose.model('Profile', profileSchema);
 
 app.get('/', (req, res) => {
     res.send("Hi search for Profiles")
@@ -125,7 +142,8 @@ app.get('/profile/:id', (req, res) => {
 
 //get all profile
 
-app.get('/profiles', (req, res) => {
+app.get('/profiles', async (req, res) => {
+    const profiles = await Profile.find(); 
     res.status(200).json(profiles)
 })
 
