@@ -6,6 +6,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+
 // const profiles = [
 //     {
 //         id: 1,
@@ -26,6 +27,7 @@ app.use(express.json())
 //         desc: "I am a full stack devoloper"
 //     }
 // ]
+
 const  data = [
     {
         "id":"1",
@@ -132,11 +134,12 @@ app.get('/Home', (req, res) => {
     res.send(result)
 })
 
-app.get('/profile/:id', (req, res) => {
-    const id = req.params.id;
-    const profile = profiles.find((profile) => {
-        return profile.id == id
-    })
+app.get('/profile/:id', async (req, res) => {
+    const newId = req.params.id;
+    const profile = await Profile.findOne({id: newId});
+    // const profile = profiles.find((profile) => {
+    //     return profile.id == id
+    // })
     res.send(profile ?? "Not Found.");
 })
 
@@ -165,16 +168,16 @@ app.post('/profileCreate/', async (req, res) => {
 })
 
 app.put('/profileUpdate/', async(req, res) => {
-    const profile = req.body;
-    const result = await Profile.updateOne(
-        { id: profile.id },
-        { $set: profile }
-    );
-    if (result.matchedCount === 0 )
-        res.status(404).json('Not Found...');
-    const profiles = await Profile.find();
-    res.status(200).json(profiles);
-    // // Algorithm
+    // const profile = req.body;
+    // const result = await Profile.updateOne(
+    //     { id: profile.id },
+    //     { $set: profile }
+    // );
+    // if (result.matchedCount === 0 )
+    //     res.status(404).json('Not Found...');
+    // const profiles = await Profile.find();
+    // res.status(200).json(profiles);
+    // Algorithm
     // // step 1: Save req data in profile variable
     // // step 2: Find Index
     // // step 3: Check index is there or not
@@ -182,21 +185,25 @@ app.put('/profileUpdate/', async(req, res) => {
     // // step 5: Return Updated value
 
     // // Save req data in profile variable
-    // const profile = req.body;
-    // // Find Index
+    const profile = req.body;
+    const result = await Profile.updateOne({id: profile.id}, {$set: profile});
+    if(result.matchedCount === 0) res.status(404).send("Not Found");
+    const Profiles = await Profile.find();
+    res.status(200).json(Profiles)
+    // Find Index
     // const profileIndex = profiles.findIndex((item) => {
     //     return item.id == profile.id
     // })
     
     // // Check index is there or not
-    // if (profileIndex == -1) {
-    //     res.status(404).send("Not Found.");
-    // }
+    if (profileIndex == -1) {
+        res.status(404).send("Not Found.");
+    }
     // // //  Replace the new value
-    // // profiles[profileIndex] = profile;
-    // //  Return Updated value
-    // const profiles = await Profile.find(); 
-    // res.status(200).send(profiles);
+    // profiles[profileIndex] = profile;
+    //  Return Updated value
+    const profiles = await Profile.find(); 
+    res.status(200).send(profiles);
 })
 
 // delete profile
